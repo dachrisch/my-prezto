@@ -11,3 +11,26 @@ if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
 fi
 
 # Customize to your needs...
+export CUSTOM_BIN=/home/daehnc/Documents/Dropbox/scripts/bash
+export PATH=$CUSTOM_BIN:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/X11/bin:$PATH
+
+# bluetooth ids
+export BT_STANNY=04:FE:A1:03:63:D4
+alias stanny_up='bluetoothctl connect $BT_STANNY'
+alias stanny_down='bluetoothctl disconnect $BT_STANNY'
+export BT_MAUSI=f4:1b:a1:31:24:ab
+export BT_TASTI=28:37:37:34:CD:94
+export BT_LAUTI=00:09:A7:12:20:9C
+export BT_BOSY=4C:87:5D:2B:86:4A
+
+
+# make directory color brighter
+export LSCOLORS='ExGxBxDxCxEgEdxbxgxcxd' # ls colors like in Linux
+export LS_COLORS='di=1;36:ln=1;35:so=1;31:pi=1;33:ex=1;32:bd=1;34;46:cd=1;34;43:su=0;41:sg=0;46:tw=0;42:ow=0;43'
+zstyle ':completion:*:default' list-colors "$LS_COLORS"
+
+alias ll='ls -al'
+alias apt-upgrade='sudo apt update && sudo apt upgrade && sudo apt autoremove'
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

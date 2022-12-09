@@ -15,7 +15,7 @@ export CUSTOM_BIN=$HOME/Documents/Dropbox/scripts/bash
 export PATH=$CUSTOM_BIN:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/X11/bin:$PATH
 
 # bluetooth handling
-source .zprezto/custom/turn_bluetooth_device.sh
+source $HOME/.zprezto/custom/turn_bluetooth_device.sh
 alias stanny_up='turn_bt_device $BT_STANNY on'
 alias stanny_down='turn_bt_device $BT_STANNY off'
 

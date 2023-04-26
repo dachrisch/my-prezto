@@ -9,6 +9,6 @@ extra_modules=$(dpkg --list | grep -E "linux-modules-extra-[0-9]+.*" | grep ii |
 echo "${RED}removing old extra modules:${YELLOW}${extra_modules}${NOCOLOR}"
 kernel_modules=$(dpkg --list | grep -E "linux-modules-[0-9]+.*" | grep ii | awk '{print $2}' | sort -V | sed -n '/'$(uname -r | cut -f1,2 -d"-")'/q;p'|xargs)
 echo "${RED}removing old modules:${YELLOW} ${kernel_modules}${NOCOLOR}"
-sudo apt remove $extra_modules $kernel_modules
+sudo apt remove $(echo $extra_modules) $(echo $kernel_modules)
 echo "${RED}autoremoving old kernels${NOCOLOR}"
 sudo apt autoremove

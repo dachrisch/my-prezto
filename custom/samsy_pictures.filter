@@ -1,0 +1,14 @@
+# samsy_backup_pictures.filter
++ Telegram/
++ Telegram/*
++ Telegram/**/*.jpg
++ Pictures/
+- Pictures/.*
++ Pictures/**
++ Pictures/**/*.jpg
++ Snapseed/
++ Snapseed/*.jpeg
++ Threema/
++ Threema/**
++ Threema/**/*.jpg
+- *

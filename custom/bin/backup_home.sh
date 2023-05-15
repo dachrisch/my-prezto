@@ -88,7 +88,7 @@ if [ "$1" = "-l" ];then
 	if [ ! -d $ENCRYPT_DIR ];then mkdir -p $ENCRYPT_DIR;fi
 	pushd $ENCRYPT_DIR > /dev/null
 	encrypt_ssh.sh $backup_file
-	if [ $($ENCRYPT_DIR/${BACKUP_NAME}_*.tgz.enc |tail -n +2|wc -l) -gt 1 ];then
+	if [ ls -t $($ENCRYPT_DIR/${BACKUP_NAME}_*.tgz.enc |tail -n +2|wc -l) -gt 1 ];then
 		ls -t $ENCRYPT_DIR/${BACKUP_NAME}_*.tgz.enc |tail -n +2 | xargs rm --
 		ls -t $ENCRYPT_DIR/${BACKUP_NAME}_*.tgz.key.enc |tail -n +2 | xargs rm --
 	fi

@@ -83,6 +83,7 @@ if [ "$1" = "-l" ];then
 	echo "done. [$backup_file]" 
 
 	ENCRYPT_DIR="$BACKUP_BASE/encrpyted_backups"
+	if [ ! -d $ENCRYPT_DIR ];then mkdir -p $ENCRYPT_DIR;fi
 	pushd $ENCRYPT_DIR > /dev/null
 	encrypt_ssh.sh $backup_file
 	ls -t $ENCRYPT_DIR/${BACKUP_NAME}_*.tgz.enc |tail -n +2 | xargs rm --

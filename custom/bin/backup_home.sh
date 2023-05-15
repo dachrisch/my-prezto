@@ -6,7 +6,7 @@ if [ "$1" = "-l" ];then
 	BACKUP_BASE=$HOME/Downloads/local_backups
 	BACKUP_NAME=$(hostname)
 	BACKUP_DIR="$BACKUP_BASE/$BACKUP_NAME"/
-	if [ ! -d $BACKUP_DIR ];then mkdir $BACKUP_DIR;fi
+	if [ ! -d $BACKUP_DIR ];then mkdir -p $BACKUP_DIR;fi
 	PASSWORD_OPTION=''
 elif [ "$1" = "-s" ];then
 	BACKUP_DIR=$HOME/Documents/storagebox/backup/$(hostname)/home/

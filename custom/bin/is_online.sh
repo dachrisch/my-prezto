@@ -10,7 +10,7 @@ if [ -z "${timeout##*[!0-9]*}" ];then
 	timeout=5
 fi
 
-for i in $(seq 1 $timeout);do
+for i in $(seq 0 $timeout);do
 	if ping -c1 $host > /dev/null 2>&1;then
 		# echo "we are online"
 		exit 0

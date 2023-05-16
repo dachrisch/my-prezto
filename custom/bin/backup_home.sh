@@ -22,7 +22,7 @@ echo "backing up [$HOME]...to [$BACKUP_DIR]"
 echo '{"timestamp":'$(date +%s)', "dateString": "'$(date +%FT%T.%3N)'"}' | jq . > "$HOME/.last_backup"
 
 # https://serverfault.com/questions/279609/what-exactly-will-delete-excluded-do-for-rsync
-rsync --timeout=30 --stats -i -r -tgo -p -l -D --update --no-links --no-specials --no-devices --delete-after --delete-excluded \
+rsync --timeout=90 --stats -i -r -v -tgo -p -l -D --update --no-links --no-specials --no-devices --delete-after --delete-excluded \
 $PASSWORD_OPTION \
 --exclude "**/google-chrome/" \
 --exclude "/snap/" \
@@ -70,9 +70,10 @@ $PASSWORD_OPTION \
 --exclude "**/virtualenv/" \
 --exclude "**/.virtualenvs/" \
 --exclude "**/__pycache__/" \
+--exclude "*.log" \
 --exclude "**/dev/container/***" \
 --exclude "**/dev/**/*.bin" \
-${HOME}/ ${BACKUP_DIR} > /dev/null
+${HOME}/ ${BACKUP_DIR}
 
 if [ "$1" = "-l" ];then
 	echo -n "compressing backup..."

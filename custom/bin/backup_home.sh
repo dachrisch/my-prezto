@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e 
+set -e
 
 if [ "$1" = "-l" ];then
 	BACKUP_BASE=$HOME/Downloads/local_backups
@@ -16,63 +16,15 @@ else
 	BACKUP_DIR=backup@cloudy::Backup/$(hostname)/home/
 	PASSWORD_OPTION="--password-file=$HOME/.ssh/backup.rsync"
 fi
+filter_file="$(dirname $(dirname $0))/backup_home.filter"
 
 echo "backing up [$HOME]...to [$BACKUP_DIR]"
-
 echo '{"timestamp":'$(date +%s)', "dateString": "'$(date +%FT%T.%3N)'"}' | jq . > "$HOME/.last_backup"
+git_remote_json.sh ~/dev | jq > ~/dev/git.backup
 
 # https://serverfault.com/questions/279609/what-exactly-will-delete-excluded-do-for-rsync
 rsync --timeout=90 --stats -i -r -v -tgo -p -l -D --update --no-links --no-specials --no-devices --delete-after --delete-excluded \
-$PASSWORD_OPTION \
---exclude "**/google-chrome/" \
---exclude "/snap/" \
---exclude "/Insync/" \
---exclude "/Dropbox/" \
---exclude "/dev/**/*.vdi" \
---exclude "/Desktop/*.mov" \
---exclude "/Downloads/" \
---exclude "**/[Cc]ache/" \
---exclude "/.npm/" \
---exclude "**/.cache/" \
---exclude "/.dropbox*/" \
---exclude "/Documents/" \
---exclude "/Public/" \
---exclude "/Pictures/" \
---exclude "/Movies/" \
---exclude "/Music/" \
---exclude "/Library/*/*" \
---exclude "/Library/IdentityServices" \
---exclude "/Library/Messages" \
---exclude "/Library/HomeKit" \
---exclude "/Library/Sharing" \
---exclude "/Library/Mail" \
---exclude "/Library/Accounts" \
---exclude "/Library/Safari" \
---exclude "/Library/Suggestions" \
---exclude "/Library/PersonalizationPortrait" \
---exclude "/Library/Cookies" \
---exclude "/Library/Autosave Information" \
---exclude "**/.env/" \
---exclude "**/.venv/" \
---exclude ".DS_Store" \
---exclude ".localized" \
---exclude ".pyenv" \
---exclude ".zoom" \
---exclude ".java" \
---exclude ".Trash" \
---exclude "**/[tT]rash" \
---exclude ".git" \
---exclude "*/*.app/" \
---exclude ".zsh_sessions" \
---exclude "**/node_modules/" \
---exclude "**/*_socket" \
---exclude "**/*.sock" \
---exclude "**/virtualenv/" \
---exclude "**/.virtualenvs/" \
---exclude "**/__pycache__/" \
---exclude "*.log" \
---exclude "**/dev/container/***" \
---exclude "**/dev/**/*.bin" \
+$PASSWORD_OPTION --filter="merge $filter_file" \
 ${HOME}/ ${BACKUP_DIR}
 
 if [ "$1" = "-l" ];then
@@ -83,7 +35,7 @@ if [ "$1" = "-l" ];then
 	if [ $(ls -t ${backup_file_prefix}_*.tgz |tail -n +2|wc -l) -gt 1 ];then
 		ls -t ${backup_file_prefix}_*.tgz |tail -n +2 | xargs rm --
 	fi
-	echo "done. [$backup_file]" 
+	echo "done. [$backup_file]"
 
 	ENCRYPT_DIR="$BACKUP_BASE/encrpyted_backups"
 	if [ ! -d $ENCRYPT_DIR ];then mkdir -p $ENCRYPT_DIR;fi

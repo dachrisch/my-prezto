@@ -16,7 +16,7 @@ for i in $(seq 0 $timeout);do
 		exit 0
 	else
 		seconds_to_wait=$((i * 10))
-		echo "we are offline...waiting ${seconds_to_wait}s"
+		echo "[$host] offline...waiting ${seconds_to_wait}s"
 		sleep $seconds_to_wait
 	fi
 done

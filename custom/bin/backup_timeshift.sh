@@ -7,6 +7,7 @@ shopt -s nullglob
 set -e
 
 source_dir=/timeshift/snapshots
+current_dir=$(dirname $0)
 
 log() {
 	echo "[$(date +"%d-%m-%Y %H:%M")] - $*"
@@ -43,12 +44,12 @@ if [ "$1" = "-l" ];then
 		backup_file="$backup_dir/$snapshot_name.tgz"
 		logn "archiving [$backup_file]..."
 
-		if [ -d "$filter_snapshots/$snapshot_name" ];then 
+		if [ -d "$filter_snapshots/$snapshot_name" ];then
 			echo "skipped. (filtered)"
 		elif [ -f "$backup_file" ];then
 			echo "skipped. (existing)"
 		else
-			sudo tar --use-compress-program=pigz -c -P -f "$backup_file" "$snapshot" 
+			sudo tar --use-compress-program=pigz -c -P -f "$backup_file" "$snapshot"
 			echo "done."
 		fi
 	done
@@ -61,7 +62,7 @@ if [ "$1" = "-l" ];then
 	ENCRYPT_DIR="$BACKUP_BASE/encrpyted_backups"
 	log "creating encrypted version of [$latest_backup_file] in [$ENCRYPT_DIR]"
 	pushd $ENCRYPT_DIR > /dev/null
-	sudo -u daehnc $(which encrypt_ssh.sh) $latest_backup_file
+	sudo -u daehnc "$current_dir/encrypt_ssh.sh" $latest_backup_file
 	mv "${latest_backup_file_basename}.enc" "${BACKUP_NAME}_${latest_backup_file_basename}.enc"
 	mv "${latest_backup_file_basename}.key.enc" "${BACKUP_NAME}_${latest_backup_file_basename}.key.enc"
 	ls -t $ENCRYPT_DIR/${BACKUP_NAME}_*.tgz.enc |tail -n +2 | xargs rm --

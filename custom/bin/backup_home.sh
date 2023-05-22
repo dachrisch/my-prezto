@@ -6,21 +6,22 @@ if [ "$1" = "-l" ];then
 	BACKUP_BASE=$HOME/Downloads/local_backups
 	BACKUP_NAME=$(hostname)
 	BACKUP_DIR="$BACKUP_BASE/$BACKUP_NAME"/
-	if [ ! -d $BACKUP_DIR ];then mkdir -p $BACKUP_DIR;fi
+	if [ ! -d "$BACKUP_DIR" ];then mkdir -p "$BACKUP_DIR";fi
 	PASSWORD_OPTION=''
 elif [ "$1" = "-s" ];then
 	BACKUP_DIR=$HOME/Documents/storagebox/backup/$(hostname)/home/
-	mkdir -p $BACKUP_DIR
+	mkdir -p "$BACKUP_DIR"
 	PASSWORD_OPTION=''
 else
 	BACKUP_DIR=backup@cloudy::Backup/$(hostname)/home/
 	PASSWORD_OPTION="--password-file=$HOME/.ssh/backup.rsync"
 fi
-filter_file="$(dirname $(dirname $0))/backup_home.filter"
+current_dir=$(dirname $0)
+filter_file="$(dirname "$current_dir")/backup_home.filter"
 
 echo "backing up [$HOME]...to [$BACKUP_DIR]"
 echo '{"timestamp":'$(date +%s)', "dateString": "'$(date +%FT%T.%3N)'"}' | jq . > "$HOME/.last_backup"
-git_remote_json.sh ~/dev | jq > ~/dev/git.backup
+"$current_dir"/git_remote_json.sh ~/dev | jq > ~/dev/git.backup
 
 # https://serverfault.com/questions/279609/what-exactly-will-delete-excluded-do-for-rsync
 rsync --timeout=90 --stats -i -r -v -tgo -p -l -D --update --no-links --no-specials --no-devices --delete-after --delete-excluded \

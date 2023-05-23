@@ -8,19 +8,22 @@ if [ "$1" = "-l" ];then
 	BACKUP_DIR="$BACKUP_BASE/$BACKUP_NAME"/
 	if [ ! -d "$BACKUP_DIR" ];then mkdir -p "$BACKUP_DIR";fi
 	PASSWORD_OPTION=''
+	backup_dest='local'
 elif [ "$1" = "-s" ];then
 	BACKUP_DIR=$HOME/Documents/storagebox/backup/$(hostname)/home/
 	mkdir -p "$BACKUP_DIR"
 	PASSWORD_OPTION=''
+	backup_dest='stroagebox'
 else
 	BACKUP_DIR=backup@cloudy::Backup/$(hostname)/home/
 	PASSWORD_OPTION="--password-file=$HOME/.ssh/backup.rsync"
+	backup_dest='cloudy'
 fi
 current_dir=$(dirname $0)
 filter_file="$(dirname "$current_dir")/backup_home.filter"
 
 echo "backing up [$HOME]...to [$BACKUP_DIR]"
-echo '{"timestamp":'$(date +%s)', "dateString": "'$(date +%FT%T.%3N)'"}' | jq . > "$HOME/.last_backup"
+echo '{"timestamp":'$(date +%s)', "dateString": "'$(date +%FT%T.%3N)'", "destination": "'$backup_dest'"}' | jq . > "$HOME/.last_backup"
 "$current_dir"/git_remote_json.sh ~/dev | jq > ~/dev/git.backup
 
 # https://serverfault.com/questions/279609/what-exactly-will-delete-excluded-do-for-rsync

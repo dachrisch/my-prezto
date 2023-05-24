@@ -36,7 +36,11 @@ zstyle ':completion:*:default' list-colors "$LS_COLORS"
 alias ll='ls -al'
 # need for storagebox utf-8 support
 alias apt-upgrade="sudo apt update && sudo apt upgrade && sudo apt autoremove && sudo apt install linux-modules-extra-$(uname -r)"
+# helper for system services
 alias sys='systemctl --user'
+# helper for docker updates
+alias dc='docker-compose'
+alias dc-refresh='git pull && dc down && dc up'
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm

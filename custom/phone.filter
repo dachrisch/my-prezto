@@ -1,0 +1,16 @@
+# phone.filter
+- Telegram Video/
+- Telegram Audio/
+- /*tmp*/
+- *[Cc]ache*/
+- **~
+- lost+found*/
+- sys/**
+- *[tT]rash*/
+- /.gvfs/
+- *backup*/
+- *.db-wal
+- DCIM/
+- Download/
+- obb/
+- com.feralinteractive.companyofheroes_android

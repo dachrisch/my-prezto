@@ -2,9 +2,9 @@
 set -e
 # extract pictures from phone, which are not in DCIM folder
 phone_dir=$1
-backup_dir=~/Downloads/local_backups/samsy_pictures_tmp
+backup_dir=~/Downloads/local_backups/phone_pictures_tmp
 dest_dir=~/Pictures/photo@cloudy/
-filter_file="$(dirname $0)/samsy_pictures.filter"
+filter_file="$(dirname $(dirname $0))/phone_pictures.filter"
 
 if [ ! -d "$phone_dir" ];then
 	echo "phone dir [$phone_dir] does not exists..."

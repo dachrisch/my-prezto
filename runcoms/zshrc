@@ -50,5 +50,7 @@ export NVM_DIR="$HOME/.nvm"
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
+# BEGIN atuin -->
 eval "$(atuin init zsh)"
 source "${ZDOTDIR:-$HOME}/.zprezto/custom/_atuin"
+# END atuin -->

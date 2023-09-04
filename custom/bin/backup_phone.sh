@@ -10,7 +10,7 @@ if [ ! -d "$phone_dir" ];then
 fi
 
 if [ -z "$type" ];then
-	echo "type not specified"
+	echo "phone-type not specified [freetext]"
 	exit 2
 fi
 

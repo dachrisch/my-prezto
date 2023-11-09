@@ -30,5 +30,5 @@ fi >&2
 
 # sync commands
 if (( $+commands[atuin] )); then
-  atuin sync
+  atuin sync > /dev/null
 fi

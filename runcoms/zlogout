@@ -17,3 +17,8 @@ SAYINGS=(
 echo $SAYINGS[$(($RANDOM % ${#SAYINGS} + 1))]
 
 } >&2
+
+# sync commands
+if (( $+commands[atuin] )); then
+  atuin sync > /dev/null
+fi

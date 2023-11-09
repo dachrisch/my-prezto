@@ -27,3 +27,8 @@ if [[ -o INTERACTIVE && -t 2 ]]; then
   fi
 
 fi >&2
+
+# sync commands
+if (( $+commands[atuin] )); then
+  atuin sync
+fi

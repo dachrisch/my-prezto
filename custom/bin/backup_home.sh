@@ -13,7 +13,7 @@ elif [ "$1" = "-s" ];then
 	BACKUP_DIR=$HOME/Documents/storagebox/backup/$(hostname)/home/
 	mkdir -p "$BACKUP_DIR"
 	PASSWORD_OPTION=''
-	backup_dest='stroagebox'
+	backup_dest='storagebox'
 else
 	BACKUP_DIR=backup@cloudy::Backup/$(hostname)/home/
 	PASSWORD_OPTION="--password-file=$HOME/.ssh/backup.rsync"

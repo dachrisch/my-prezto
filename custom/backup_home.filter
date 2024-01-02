@@ -51,3 +51,4 @@
 - **/tmp/
 - *.tabninemodel
 - nvm/versions/**
+- /dev/**/screenshots

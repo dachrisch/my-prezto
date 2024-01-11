@@ -65,9 +65,10 @@ if [ "$1" = "-l" ];then
 	sudo -u daehnc "$current_dir/encrypt_ssh.sh" $latest_backup_file
 	mv "${latest_backup_file_basename}.enc" "${BACKUP_NAME}_${latest_backup_file_basename}.enc"
 	mv "${latest_backup_file_basename}.key.enc" "${BACKUP_NAME}_${latest_backup_file_basename}.key.enc"
-	ls -t $ENCRYPT_DIR/${BACKUP_NAME}_*.tgz.enc |tail -n +2 | xargs rm --
-	ls -t $ENCRYPT_DIR/${BACKUP_NAME}_*.tgz.key.enc |tail -n +2 | xargs rm --
-
+	if [ ! -z "$(ls -t $ENCRYPT_DIR/${BACKUP_NAME}_*.tgz.enc |tail -n +2)" ];then
+		ls -t $ENCRYPT_DIR/${BACKUP_NAME}_*.tgz.enc |tail -n +2 | xargs rm --
+		ls -t $ENCRYPT_DIR/${BACKUP_NAME}_*.tgz.key.enc |tail -n +2 | xargs rm --
+	fi
 else
 	latest_snapshot=$(ls -td -- "$source_dir"/*|head -1)/
 	echo '{"timestamp":'$(date +%s)', "dateString": "'$(date +%FT%T.%3N)'"}' | jq . | sudo tee "$latest_snapshot.last_backup"

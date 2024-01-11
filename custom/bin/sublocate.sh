@@ -4,7 +4,7 @@ pipe=/tmp/selecPipe
 
 item=$1
 
-count=0
+count=1
 located_files=()
 options_array=()
 locate $item | while read -r located_file;do

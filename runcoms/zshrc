@@ -55,3 +55,9 @@ export NVM_DIR="$HOME/.nvm"
 eval "$(atuin init zsh)"
 source "${ZDOTDIR:-$HOME}/.zprezto/custom/_atuin"
 # END atuin -->
+
+# BEGIN pyenv -->
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+# END pyenv -->

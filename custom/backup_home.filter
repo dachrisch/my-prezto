@@ -60,3 +60,4 @@
 - /dev/**/screenshots
 - /dev/playground/**
 - /snap/
+- .cargo/registry/src

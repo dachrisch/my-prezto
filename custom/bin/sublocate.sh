@@ -1,5 +1,6 @@
 #!/bin/zsh
 
+set -e
 pipe=/tmp/selecPipe
 
 item=$1
@@ -15,7 +16,7 @@ locate $item | while read -r located_file;do
     ((count++))
 done
 
-mkfifo $pipe
+[[ ! -p $pipe ]] && mkfifo $pipe
 
 dialog --title "Which file" --menu "Choose one" 0 0 17 ${options_array[@]} 2>$pipe&
 clear

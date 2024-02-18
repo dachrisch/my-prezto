@@ -1,10 +1,12 @@
 - **/*.sock
 - **/*_socket
 - **/.cache/
+- **/[cC]achedData/
+- **/.*_[cC]ache/
+- **/[Cc]ache/
 - **/.env/
 - **/.venv/
 - **/.virtualenvs/
-- **/[Cc]ache/
 - **/[tT]rash
 - **/__pycache__/
 - **/dev/**/*.bin
@@ -14,6 +16,7 @@
 - **/tmp/
 - **/virtualenv/
 - *.log
+- **/logs/
 - *.tabninemodel
 - */*.app/
 - .DS_Store
@@ -61,3 +64,5 @@
 - /dev/playground/**
 - /snap/
 - .cargo/registry/src
+- .ansible/collections
+- [Hh]istory

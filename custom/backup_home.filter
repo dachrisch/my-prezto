@@ -66,3 +66,4 @@
 - .cargo/registry/src
 - .ansible/collections
 - [Hh]istory
+- virtualenvs

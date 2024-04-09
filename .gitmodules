@@ -32,3 +32,6 @@
 [submodule "contrib/zsh-z"]
 	path = contrib/zsh-z
 	url = https://github.com/agkozak/zsh-z.git
+[submodule "contrib/lxd-completion-zsh"]
+	path = contrib/lxd-completion-zsh
+	url = https://github.com/endaaman/lxd-completion-zsh

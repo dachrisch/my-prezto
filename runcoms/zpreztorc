@@ -42,7 +42,8 @@ zstyle ':prezto:load' pmodule \
   'git' \
   'history-substring-search' \
   'prompt' \
-  'zsh-z'
+  'zsh-z' \
+  'lxd-completion-zsh'
 
 #
 # Autosuggestions

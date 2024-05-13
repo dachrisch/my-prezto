@@ -1,9 +1,10 @@
 - **/*.sock
 - **/*_socket
 - **/.cache/
-- **/[cC]achedData/
+- **/[cC]ached*/
 - **/.*_[cC]ache/
 - **/[Cc]ache/
+- **/[Cc]aches/
 - **/.env/
 - **/.venv/
 - **/.virtualenvs/
@@ -14,6 +15,7 @@
 - **/google-chrome/
 - **/node_modules/
 - **/tmp/
+- **/.tmp/
 - **/virtualenv/
 - *.log
 - **/logs/
@@ -50,9 +52,11 @@
 - /Library/Sharing
 - /Library/Suggestions
 - /Movies/
+- /Videos/
 - /Music/
 - /Pictures/
 - /Public/
+# dev build files
 - /dev/**/*.a
 - /dev/**/*.dat
 - /dev/**/*.o
@@ -60,11 +64,40 @@
 - /dev/**/*.so.*
 - /dev/**/*.vdi
 - /dev/**/*.wav
+- /dev/**/*.deb
+- /dev/**/*.AppImage
+- /dev/**/*.zip
+- /dev/**/*.mp4
+- /dev/**/*.mp3
+- /dev/**/*.db
 - /dev/**/screenshots
 - /dev/playground/**
+- **/dev/**/build
+- **/dev/**/.dart_tool
+# jekyll
+- /dev/**/_site
+- /dev/**/_test_site
 - /snap/
 - .cargo/registry/src
 - .ansible/collections
 - [Hh]istory
 - virtualenvs
-
+# Android SDK / Flutter
+- .android/avd
+- .dartServer
+- Android/Sdk/
+- jxbrowser
+- wrapper/dists
+- .pub-cache
+- .wine
+- .minecraft
+- .rustup
+# MS Teams
+- Code Cache
+- media-stack
+- skylib
+- Code/WebStorage
+- aws/dist
+- /.config/**/nodejs
+- TabNine
+- /.local/**/*.jar

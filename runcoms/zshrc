@@ -18,10 +18,10 @@ if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
 fi
 
 # Customize to your needs...
-export CUSTOM_DB_BIN=$HOME/Documents/Dropbox/scripts/bash
-export CUSTOM_BIN=$HOME/.zprezto/custom/bin
-export CUSTOM_PIP_BIN=$HOME/.local/bin
-export PATH=$CUSTOM_PIP_BIN:$CUSTOM_DB_BIN:$CUSTOM_BIN:/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/X11/bin:$PATH
+if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/custom/path.zsh" ]]; then
+  source "${ZDOTDIR:-$HOME}/.zprezto/custom/path.zsh"
+fi
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/X11/bin:$PATH
 
 # make directory color brighter
 export LSCOLORS='ExGxBxDxCxEgEdxbxgxcxd' # ls colors like in Linux

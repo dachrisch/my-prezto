@@ -38,8 +38,10 @@ export NVM_DIR="$HOME/.nvm"
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # BEGIN atuin -->
-eval "$(atuin init zsh)"
-source "${ZDOTDIR:-$HOME}/.zprezto/custom/_atuin"
+if (( $+commands[atuin] )); then
+  eval "$(atuin init zsh)"
+  source "${ZDOTDIR:-$HOME}/.zprezto/custom/_atuin"
+fi
 # END atuin -->
 
 # BEGIN pyenv -->

@@ -72,8 +72,9 @@
 - /dev/**/*.db
 - /dev/**/screenshots
 - /dev/playground/**
-- **/dev/**/build
-- **/dev/**/.dart_tool
+- /dev/**/build
+- /dev/**/.dart_tool
+- build/classes
 # jekyll
 - /dev/**/_site
 - /dev/**/_test_site

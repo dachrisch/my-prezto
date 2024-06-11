@@ -15,3 +15,5 @@ alias dc-refresh='git pull && dc down && dc up'
 source $HOME/.zprezto/custom/turn_bluetooth_device.sh
 alias stanny_up='turn_bt_device $BT_STANNY on'
 alias stanny_down='turn_bt_device $BT_STANNY off'
+
+alias tar='tar --use-compress-program=pigz'

@@ -8,7 +8,7 @@ alias update-all='apt-upgrade && snap-refresh && flatpak update'
 # helper for system services
 alias sys='systemctl --user'
 # helper for docker updates
-alias dc='docker-compose'
+alias dc='docker compose'
 alias dc-refresh='git pull && dc down && dc up'
 
 # bluetooth handling

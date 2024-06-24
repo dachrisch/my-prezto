@@ -40,7 +40,7 @@ export NVM_DIR="$HOME/.nvm"
 # BEGIN atuin -->
 if (( $+commands[atuin] )); then
   eval "$(atuin init zsh)"
-  source "${ZDOTDIR:-$HOME}/.zprezto/custom/_atuin"
+  source "${ZDOTDIR:-$HOME}/.zprezto/custom/completions/_atuin"
 fi
 # END atuin -->
 
@@ -52,3 +52,7 @@ if [ -d "$HOME/.pyenv" ];then
   eval "$(pyenv init -)"
 fi
 # END pyenv -->
+
+fpath=(${ZDOTDIR:-$HOME}/.zprezto/custom/completions/_docker \\$fpath)
+autoload -Uz compinit
+compinit

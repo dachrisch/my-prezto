@@ -4,7 +4,9 @@ alias latest_installed_kernel_version='dpkg --list |grep -E "linux-modules-[0-9]
 alias snap-refresh='sudo snap refresh snap-store && sudo snap refresh'
 # linux-modules-extra needed for storagebox utf-8 support
 alias apt-upgrade='sudo apt update && sudo apt upgrade && sudo apt autoremove && sudo apt install linux-modules-extra-$(latest_installed_kernel_version)'
+alias au=apt-upgrade
 alias update-all='apt-upgrade && snap-refresh && flatpak update'
+alias ua=update-all
 # helper for system services
 alias sys='systemctl --user'
 # helper for docker updates

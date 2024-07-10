@@ -1,0 +1,8 @@
+#!/bin/zsh
+exec > >(systemd-cat -t update-firewall -p info) 2>&1
+
+source ~/.zshrc
+cd ~/dev/infrastructure/container/hetzner/ || exit
+export API_TOKEN=$HETZNER_API_KEY
+
+./update_firewall.sh

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/zsh
 
 set -e
 
@@ -27,9 +27,9 @@ echo '{"timestamp":'$(date +%s)', "dateString": "'$(date +%FT%T.%3N)'", "destina
 "$current_dir"/git_remote_json.sh ~/dev | jq > ~/dev/git.backup
 
 # https://serverfault.com/questions/279609/what-exactly-will-delete-excluded-do-for-rsync
-rsync --timeout=90 --stats -i -r -v -tgo -p -l -D --update --no-links --no-specials --no-devices --delete-after --delete-excluded \
+rsync --timeout=90 --stats -i -a -r -v -tgo -p -l -D --update --no-links --no-specials --no-devices --delete-after --delete-excluded \
 $PASSWORD_OPTION --filter="merge $filter_file" \
-${HOME}/ ${BACKUP_DIR}
+${HOME}/ ${BACKUP_DIR} | grep -v 'skipping non-regular file'
 
 if [ "$1" = "-l" ];then
 	echo -n "compressing backup..."
@@ -44,7 +44,7 @@ if [ "$1" = "-l" ];then
 	ENCRYPT_DIR="$BACKUP_BASE/encrpyted_backups"
 	if [ ! -d $ENCRYPT_DIR ];then mkdir -p $ENCRYPT_DIR;fi
 	pushd $ENCRYPT_DIR > /dev/null
-	encrypt_ssh.sh $backup_file
+	~/.zprezto/custom/bin/encrypt_ssh.sh $backup_file
 	if [ $(ls -t $ENCRYPT_DIR/${BACKUP_NAME}_*.tgz.enc |tail -n +2|wc -l) -gt 1 ];then
 		ls -t $ENCRYPT_DIR/${BACKUP_NAME}_*.tgz.enc |tail -n +2 | xargs rm --
 		ls -t $ENCRYPT_DIR/${BACKUP_NAME}_*.tgz.key.enc |tail -n +2 | xargs rm --

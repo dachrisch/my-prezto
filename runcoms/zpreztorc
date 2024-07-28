@@ -43,7 +43,8 @@ zstyle ':prezto:load' pmodule \
   'history-substring-search' \
   'prompt' \
   'zsh-z' \
-  'lxd-completion-zsh'
+  'lxd-completion-zsh' \
+  'autosuggestions'
 
 #
 # Autosuggestions
@@ -74,7 +75,7 @@ zstyle ':prezto:module:editor' key-bindings 'emacs'
 # zstyle ':prezto:module:editor' dot-expansion 'yes'
 
 # Allow the zsh prompt context to be shown.
-#zstyle ':prezto:module:editor' ps-context 'yes'
+# zstyle ':prezto:module:editor' ps-context 'yes'
 
 #
 # Git

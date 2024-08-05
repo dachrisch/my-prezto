@@ -27,7 +27,7 @@ echo '{"timestamp":'$(date +%s)', "dateString": "'$(date +%FT%T.%3N)'", "destina
 "$current_dir"/git_remote_json.sh ~/dev | jq > ~/dev/git.backup
 
 # https://serverfault.com/questions/279609/what-exactly-will-delete-excluded-do-for-rsync
-rsync --timeout=90 --stats -i -a -r -v -tgo -p -l -D --update --no-links --no-specials --no-devices --delete-after --delete-excluded \
+rsync --timeout=90 --stats -i -a -r -v -tgo -p -l -D --update --no-links --no-specials --no-group --no-devices --delete-after --delete-excluded \
 $PASSWORD_OPTION --filter="merge $filter_file" \
 ${HOME}/ ${BACKUP_DIR} | grep -v 'skipping non-regular file'
 

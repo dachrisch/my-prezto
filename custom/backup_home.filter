@@ -1,8 +1,9 @@
 - **/*.sock
 - **/*_socket
 - **/.cache/
-- **/[cC]ached*/
-- **/.*_[cC]ache/
+- **/[cC]ache*/
+- **/*_[cC]ache/
+- **/*[cC]ache/
 - **/[Cc]ache/
 - **/[Cc]aches/
 - **/.env/
@@ -80,10 +81,14 @@
 - /dev/**/_test_site
 - /snap/
 - .cargo/registry/src
+- .cargo/git
 - .ansible/collections
 - [Hh]istory
 - virtualenvs
 # Android SDK / Flutter
+- .flutter_sdk/bin
+- .flutter_sdk/packages
+- .local/**/lib
 - .android/avd
 - .dartServer
 - Android/Sdk/
@@ -97,8 +102,21 @@
 - Code Cache
 - media-stack
 - skylib
-- Code/WebStorage
+- Code/*[Ss]torage
+- Code/**/*[Ss]torage
+- Code/*Crash*
 - aws/dist
 - /.config/**/nodejs
 - TabNine
 - /.local/**/*.jar
+# cypress
+- Cypress/**/browsers
+# storage
+- .config/**/*[Ss]torage
+- .local/**/*[Ss]torage
+- .local/**/store
+# jdk
+- .jdks/
+# ruby
+- .local/**/ruby/**/git
+- .local/**/ruby/**/bin

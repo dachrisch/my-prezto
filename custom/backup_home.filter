@@ -120,3 +120,11 @@
 # ruby
 - .local/**/ruby/**/git
 - .local/**/ruby/**/bin
+# freetz
+- freetz-ng/build
+- freetz-ng/images
+- freetz-ng/make
+- freetz-ng/packages
+- freetz-ng/source
+- freetz-ng/toolchain
+- freetz-ng/tools

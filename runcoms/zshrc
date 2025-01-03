@@ -45,7 +45,7 @@ fi
 # END atuin -->
 
 # BEGIN pyenv -->
-if [ -d "$HOME/.pyenv" ];then
+if [ -d "$HOME/.pyenv" && -f "$HOME/.pyenv/.pyenvrc" ];then
   source $HOME/.pyenv/.pyenvrc
   export PYENV_ROOT="$HOME/.pyenv"
   [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
@@ -56,3 +56,14 @@ fi
 fpath=(${ZDOTDIR:-$HOME}/.zprezto/custom/completions/_docker \\$fpath)
 autoload -Uz compinit
 compinit
+
+# bun completions
+[ -s "/home/cda/.local/share/reflex/bun/_bun" ] && source "/home/cda/.local/share/reflex/bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.local/share/reflex/bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+# bun
+export BUN_INSTALL="$HOME/.local/share/reflex/bun"
+export PATH="$BUN_INSTALL/bin:$PATH"

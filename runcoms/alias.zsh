@@ -19,3 +19,4 @@ alias stanny_up='turn_bt_device $BT_STANNY on'
 alias stanny_down='turn_bt_device $BT_STANNY off'
 
 alias tar='tar --use-compress-program=pigz'
+alias aicommits='node /home/cda/.zprezto/custom/bin/aicommits.js'

@@ -69,3 +69,9 @@ export BUN_INSTALL="$HOME/.local/share/reflex/bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
 . "$HOME/.atuin/bin/env"
+
+# Add custom functions to fpath
+fpath=("${ZDOTDIR:-$HOME}/.zprezto/custom/functions" $fpath)
+
+# Autoload the remote_log function
+autoload -Uz logdy

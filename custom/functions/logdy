@@ -30,7 +30,7 @@ logdy() {
   fi
 
   host="${LOGDY_SOURCE:-$(hostname)}"
-  script="${LOGDY_SCRIPT_NAME:-$(basename "$0")}"
+  script="${LOGDY_SCRIPT_NAME:-${ZSH_SCRIPT:-$(basename "$0")}}"
 
   # If first arg is -h/--help show usage
   if [[ "$1" == "-h" || "$1" == "--help" ]]; then

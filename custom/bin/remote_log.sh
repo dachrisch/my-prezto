@@ -1,0 +1,173 @@
+# Paste this into ~/.zshrc or source it from your scripts
+# Minimal required env vars:
+#   LOGDY_URL (e.g. "https://logging.servyy-test.lxd/api/log")
+#   LOGDY_API_KEY (the Bearer token from your logdy container)
+# Optional:
+#   LOGDY_INSECURE=1   # if you need curl -k for self-signed certs
+#   LOGDY_DRY_RUN=1    # prints payload instead of sending (debug)
+
+# Defaults (override in environment)
+: ${LOGDY_INSECURE:=1}
+: ${LOGDY_TIMEOUT:=5}
+
+LOGDY__json_escape() {
+  # argument -> escaped JSON-safe string on stdout
+  local s="$1"
+  s=${s//\\/\\\\}           # backslash
+  s=${s//\"/\\\"}          # double quote
+  s=${s//$'\n'/\\n}        # newline
+  s=${s//$'\r'/\\r}        # carriage return
+  printf '%s' "$s"
+}
+
+logdy() {
+  local arg level timestamp host script message raw_json json_fields curl_opts payload
+
+  # quick validation
+  if [[ -z "${LOGDY_API_KEY}" ]]; then
+    printf '%s\n' "logdy: ERROR: please set LOGDY_API_KEY" >&2
+    return 2
+  fi
+
+  host="${LOGDY_SOURCE:-$(hostname)}"
+  script="${LOGDY_SCRIPT_NAME:-$(basename "$0")}"
+
+  # If first arg is -h/--help show usage
+  if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+    cat <<'USG' >&2
+Usage:
+  logdy [level] [message-or-json] [key=value ...]
+  Examples:
+    logdy info "Backup completed"
+    logdy warn "Disk nearly full" disk=/dev/sda1 usage=92%
+    logdy error '{"user":"alice","op":"deploy","status":"fail"}'
+    cat logfile | logdy warn -    # read message from stdin (use '-' as message)
+Notes:
+  - If first token matches info|warn|error|debug it's treated as level, otherwise level defaults to 'info'.
+  - If the (first) message starts with '{' it's treated as a JSON object and will be embedded as "payload".
+  - key=value pairs are turned into separate fields in the log object.
+USG
+    return 0
+  fi
+
+  # if first token is a known level, take it; otherwise default to info
+  case "$1" in
+    info|warn|error|debug|trace) level="$1"; shift ;;
+    *) level="info" ;;
+  esac
+
+  timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+  # If no args remain but stdin has data, read stdin into message
+  if [[ $# -eq 0 ]]; then
+    if ! [ -t 0 ]; then
+      message="$(cat -)"
+    fi
+  fi
+
+  # If there's at least one arg and the first arg is '-' -> read stdin as message
+  if [[ "$1" == "-" ]]; then
+    message="$(cat -)"
+    shift
+  fi
+
+  # If first arg starts with '{' -> capture the rest of the args as raw JSON payload
+  if [[ $# -gt 0 && "$1" == \{* ]]; then
+    # join remaining args with spaces to reconstruct JSON
+    raw_json="$*"
+    # trim trailing/leading spaces (use sed - portable)
+    raw_json="$(print -r -- "$raw_json" | sed 's/^ *//;s/ *$//')"
+    # clear positional params (we consumed them)
+    set --
+  else
+    # Build message from the first contiguous block of non key=value args (or single quoted arg)
+    message_parts=()
+    while [[ $# -gt 0 ]]; do
+      if [[ "$1" == *=* ]]; then
+        break
+      fi
+      message_parts+=("$1")
+      shift
+    done
+    if (( ${#message_parts} )); then
+      # join with spaces
+      message="$(printf '%s ' "${message_parts[@]}" | sed 's/ $//')"
+    fi
+  fi
+
+  # Now remaining "$@" are key=value pairs (if any). Convert to JSON fields
+  json_fields=""
+  for arg in "$@"; do
+    if [[ "$arg" == *=* ]]; then
+      local k=${arg%%=*}
+      local v=${arg#*=}
+      v="$(LOGDY__json_escape "$v")"
+      json_fields+=",\"$k\":\"$v\""
+    else
+      # non key-value token after key-values -> append to message
+      message="${message:+$message }$arg"
+    fi
+  done
+
+  # final trim message (remove leading/trailing spaces)
+  if [[ -n "$message" ]]; then
+    message="$(print -r -- "$message" | sed 's/^ *//;s/ *$//')"
+  fi
+
+  # Build the log object. If user provided raw_json, embed it as payload.
+  if [[ -n "$raw_json" ]]; then
+    # raw_json is trusted to be JSON text; embed as "payload"
+    payload="{\"level\":\"${level}\",\"timestamp\":\"${timestamp}\",\"source\":\"${host}\",\"script\":\"${script}\""
+    if [[ -n "$message" ]]; then
+      local em
+      em="$(LOGDY__json_escape "$message")"
+      payload+=",\"message\":\"${em}\""
+    fi
+    payload+="${json_fields}"
+    # remove possible leading/trailing spaces in raw_json
+    local trimmed
+    trimmed="$(print -r -- "$raw_json" | sed 's/^ *//;s/ *$//')"
+    payload+=",\"payload\":${trimmed}}"
+  else
+    payload="{\"level\":\"${level}\",\"timestamp\":\"${timestamp}\",\"source\":\"${host}\",\"script\":\"${script}\""
+    if [[ -n "$message" ]]; then
+      local em
+      em="$(LOGDY__json_escape "$message")"
+      payload+=",\"message\":\"${em}\""
+    fi
+    payload+="${json_fields}}"
+  fi
+
+  # Final body to send
+  local body
+  # source for outer object is host (keeps Logdy grouping)
+  body="{\"logs\":[{\"log\":${payload}}],\"source\":\"${host}\"}"
+
+  # If dry-run, print payload and return
+  if [[ "${LOGDY_DRY_RUN:-0}" -eq 1 ]]; then
+    printf '%s\n' "logdy (dry-run) payload:" >&2
+    printf '%s\n' "$body" >&2
+    return 0
+  fi
+
+  # Curl options (timeout + optionally -k)
+  curl_opts=( -s --max-time "${LOGDY_TIMEOUT}" )
+  if [[ "${LOGDY_INSECURE:-0}" -eq 1 ]]; then
+    curl_opts+=( -k )
+  fi
+
+  # Send to Logdy
+  HTTP_RESPONSE="$(curl "${curl_opts[@]}" -X POST "${LOGDY_URL}" \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer ${LOGDY_API_KEY}" \
+    --data "${body}" 2>/dev/null || echo "CURL_FAIL")"
+
+  local curl_code=$?
+ # Success: empty body and curl exit code 0
+  if [[ $curl_code -eq 0 && -z "$HTTP_RESPONSE" ]]; then
+    return 0
+  else
+    printf '%s\n' "remote_log: server response: ${body:-<empty>} (HTTP $response)" >&2
+    return 4
+  fi
+}

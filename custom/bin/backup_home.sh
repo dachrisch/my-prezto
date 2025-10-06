@@ -1,6 +1,7 @@
 #!/bin/zsh
 
 set -e
+source "$HOME/.zprezto/custom/functions/logdy"
 
 if [ "$1" = "-l" ];then
 	BACKUP_BASE=$HOME/Downloads/local_backups
@@ -22,7 +23,7 @@ fi
 current_dir=$(dirname $0)
 filter_file="$(dirname "$current_dir")/backup_home.filter"
 
-echo "backing up [$HOME]...to [$BACKUP_DIR]"
+logdy info "backing up [$HOME]...to [$BACKUP_DIR]" destination="$backup_dest"
 echo '{"timestamp":'$(date +%s)', "dateString": "'$(date +%FT%T.%3N)'", "destination": "'$backup_dest'"}' | jq . > "$HOME/.last_backup"
 "$current_dir"/git_remote_json.sh ~/dev | jq > ~/dev/git.backup
 
@@ -32,14 +33,14 @@ $PASSWORD_OPTION --filter="merge $filter_file" \
 ${HOME}/ ${BACKUP_DIR} | grep -v 'skipping non-regular file'
 
 if [ "$1" = "-l" ];then
-	echo -n "compressing backup..."
+	logdy debug "compressing backup..." backup_dir="$BACKUP_DIR"
 	backup_file_prefix="$(cd $(dirname "$BACKUP_DIR");pwd)/$(basename "$BACKUP_DIR")"
 	backup_file=${backup_file_prefix}_$(date +%F.%H%M%S).tgz
 	tar --use-compress-program=pigz -c -f $backup_file -C $BACKUP_BASE $BACKUP_NAME > /dev/null
 	if [ $(ls -t ${backup_file_prefix}_*.tgz |tail -n +2|wc -l) -gt 1 ];then
 		ls -t ${backup_file_prefix}_*.tgz |tail -n +2 | xargs rm --
 	fi
-	echo "done. [$backup_file]"
+	logdy debug "done. [$backup_file]" backup_file="$backup_file"
 
 	ENCRYPT_DIR="$BACKUP_BASE/encrpyted_backups"
 	if [ ! -d $ENCRYPT_DIR ];then mkdir -p $ENCRYPT_DIR;fi

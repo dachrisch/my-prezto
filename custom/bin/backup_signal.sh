@@ -31,7 +31,7 @@ fi
 EXPORT_DIR=$(mktemp -d)
 
 # Export Signal messages to export directory
-logdy info "Exporting Signal messages using temporary export directory: $EXPORT_DIR..." export_dir="$EXPORT_DIR"
+logdy debug "Exporting Signal messages using temporary export directory: $EXPORT_DIR..." export_dir="$EXPORT_DIR"
 ~/go/bin/sigtop export-messages -f json "$EXPORT_DIR"
 
 # Temp directory for creating archive
@@ -48,7 +48,7 @@ tar -czf "$ARCHIVE_PATH" -C "$EXPORT_DIR" .
 LOCAL_ARCHIVE_DIR="${BACKUP_BASE:-$BACKUP_DIR}"
 mv "$ARCHIVE_PATH" "$LOCAL_ARCHIVE_DIR/"
 
-logdy info "Local backup completed: ${LOCAL_ARCHIVE_DIR}/$ARCHIVE_NAME" archive_name="${LOCAL_ARCHIVE_DIR}/$ARCHIVE_NAME"
+logdy info "Local backup completed: ${LOCAL_ARCHIVE_DIR}/$ARCHIVE_NAME" archive_name="${LOCAL_ARCHIVE_DIR}/$ARCHIVE_NAME" destination="$backup_dest"
 
 # Cloudy sync if applicable
 if [[ "$backup_dest" == "cloudy" ]]; then
@@ -74,7 +74,7 @@ COUNT=${#OLD_FILES[@]}
 
 if (( COUNT > 0 )); then
     rm -f "${OLD_FILES[@]}"
-    logdy info "Removed $COUNT old backup(s) from $LOCAL_ARCHIVE_DIR" count=$COUNT
+    logdy debug "Removed $COUNT old backup(s) from $LOCAL_ARCHIVE_DIR" count=$COUNT
 else
     logdy debug "No old backups older than 30 days found in $LOCAL_ARCHIVE_DIR"
 fi

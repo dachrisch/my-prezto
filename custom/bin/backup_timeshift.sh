@@ -1,19 +1,22 @@
-#!/bin/bash
+#!/bin/zsh
 
 # https://unix.stackexchange.com/questions/239772/bash-iterate-file-list-except-when-empty
 shopt -s nullglob
 
 # exit on error
 set -e
+source "$HOME/.zprezto/custom/functions/logdy"
 
 source_dir=/timeshift/snapshots
 current_dir=$(dirname $0)
 
 log() {
+  logdy info $*
 	echo "[$(date +"%d-%m-%Y %H:%M")] - $*"
 }
 
 logn() {
+  logdy debug $*
 	echo -n "[$(date +"%d-%m-%Y %H:%M")] - $*"
 }
 

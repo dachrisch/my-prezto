@@ -167,7 +167,7 @@ USG
   if [[ $curl_code -eq 0 && -z "$HTTP_RESPONSE" ]]; then
     return 0
   else
-    printf '%s\n' "remote_log: server response: ${body:-<empty>} (HTTP $response)" >&2
+    printf '%s\n' "remote_log: server response: ${body:-<empty>} (HTTP $HTTP_RESPONSE)" >&2
     return 4
   fi
 }

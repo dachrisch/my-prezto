@@ -168,8 +168,7 @@ zstyle ':prezto:module:prompt' theme 'powerlevel10k'
 # Auto switch the Python virtualenv on directory change.
 zstyle ':prezto:module:python:virtualenv' auto-switch 'yes'
 
-# Automatically initialize virtualenvwrapper if pre-requisites are met.
-# Disabled to avoid virtualenvwrapper errors (we use pyenv virtualenv instead)
+# Disable virtualenvwrapper (we use pyenv instead)
 zstyle ':prezto:module:python:virtualenv' initialize 'no'
 
 #

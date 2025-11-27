@@ -57,7 +57,7 @@ if [[ "$backup_dest" == "cloudy" ]]; then
     REMOTE_HOST=${BACKUP_DIR%%::*}
 
     rsync -avh $PASSWORD_OPTION "$LOCAL_ARCHIVE_DIR/$ARCHIVE_NAME" "$BACKUP_DIR"
-    echo "Remote backup completed: $BACKUP_DIR$ARCHIVE_NAME"
+    logdy info "Remote backup completed" archive_name="$ARCHIVE_NAME" destination="$backup_dest"
 fi
 
 # Clean up temp directories

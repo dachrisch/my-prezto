@@ -10,16 +10,6 @@ source "$HOME/.zprezto/custom/functions/logdy"
 source_dir=/timeshift/snapshots
 current_dir=$(dirname $0)
 
-log() {
-  logdy info $*
-	echo "[$(date +"%d-%m-%Y %H:%M")] - $*"
-}
-
-logn() {
-  logdy debug $*
-	echo -n "[$(date +"%d-%m-%Y %H:%M")] - $*"
-}
-
 if [ "$1" = "-l" ];then
 
 	backup_dir=/timeshift/snapshots-backups
@@ -28,42 +18,41 @@ if [ "$1" = "-l" ];then
 		sudo mkdir "$backup_dir"
 	fi
 
-	log "removing old backups in [$backup_dir]"
+	logdy info "Removing old backups" backup_dir="$backup_dir"
 	for snapshot in "$backup_dir"/*.tgz;do
 		expected_snapshot_dir=$source_dir/$(basename "${snapshot::-4}")
-		logn "considering [$(basename "$snapshot")] of [$expected_snapshot_dir]..."
+		snapshot_name=$(basename "$snapshot")
 		if [ -d "$expected_snapshot_dir" ];then
-			echo "keep."
+			logdy debug "Considering snapshot - keeping" snapshot="$snapshot_name" expected_dir="$expected_snapshot_dir"
 		else
-			echo "deleting."
+			logdy debug "Considering snapshot - deleting" snapshot="$snapshot_name" expected_dir="$expected_snapshot_dir"
 			sudo rm "$snapshot"
 		fi
 	done
 
 
-	log "creating local backups of snapshot in [$backup_dir]"
+	logdy info "Creating local backups of snapshots" backup_dir="$backup_dir"
 	for snapshot in "$source_dir"/*;do
 		snapshot_name=$(basename "$snapshot")
 		backup_file="$backup_dir/$snapshot_name.tgz"
-		logn "archiving [$backup_file]..."
 
 		if [ -d "$filter_snapshots/$snapshot_name" ];then
-			echo "skipped. (filtered)"
+			logdy debug "Archiving snapshot - skipped (filtered)" backup_file="$backup_file"
 		elif [ -f "$backup_file" ];then
-			echo "skipped. (existing)"
+			logdy debug "Archiving snapshot - skipped (existing)" backup_file="$backup_file"
 		else
+			logdy debug "Archiving snapshot" backup_file="$backup_file"
 			sudo tar --use-compress-program=pigz -c -P -f "$backup_file" "$snapshot"
-			echo "done."
 		fi
 	done
-	log "local backup created...done."
+	logdy info "Local backup created"
 
 	BACKUP_BASE=/home/daehnc/Downloads/local_backups
 	BACKUP_NAME=timeshift
 	latest_backup_file=$(ls -td -- "$backup_dir"/*|head -1)
 	latest_backup_file_basename=$(basename $latest_backup_file)
 	ENCRYPT_DIR="$BACKUP_BASE/encrpyted_backups"
-	log "creating encrypted version of [$latest_backup_file] in [$ENCRYPT_DIR]"
+	logdy info "Creating encrypted version" source_file="$latest_backup_file" encrypt_dir="$ENCRYPT_DIR"
 	pushd $ENCRYPT_DIR > /dev/null
 	sudo -u daehnc "$current_dir/encrypt_ssh.sh" $latest_backup_file
 	mv "${latest_backup_file_basename}.enc" "${BACKUP_NAME}_${latest_backup_file_basename}.enc"
@@ -77,11 +66,11 @@ else
 	echo '{"timestamp":'$(date +%s)', "dateString": "'$(date +%FT%T.%3N)'"}' | jq . | sudo tee "$latest_snapshot.last_backup"
 
 	remote_backup_location=backup@cloudy::Backup/$(hostname)/timeshift/
-	log "syncing [$latest_snapshot] with [$remote_backup_location]..."
+	logdy info "Syncing with remote location" source="$latest_snapshot" destination="$remote_backup_location"
 	set -e
 	sudo rsync --timeout=30 --stats -i -r -t -p -l -D --update --delete-after --password-file=/root/.ssh/backup.rsync --exclude "*.swap" "$latest_snapshot" "$remote_backup_location"
 	set +e
-	log "synced with remote location...done."
+	logdy info "Synced with remote location"
 fi
 # check md5sums
 # ssh root@cloudy "find /volume1/Backup/delly/timeshift -type f -exec md5sum {} \;" | sed "s/\/volume1\/Backup\/delly\/timeshift\///" | md5sum --check

@@ -1,5 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 set -e
+
+source "$HOME/.zprezto/custom/functions/logdy"
 
 phone_folder=$1
 backup_folder=$2
@@ -11,7 +13,7 @@ if [ $# -ne 2 ];then
 fi
 
 if [ ! -d "$backup_folder" ];then
-	echo "folder [$backup_folder] doesn't exists"
+	logdy error "Backup folder doesn't exist" backup_folder="$backup_folder"
 	exit 2
 fi
 
@@ -19,15 +21,15 @@ backup() {
 	source=$1
 	destination=$2
 
-	echo "Backing up [$source] to [$destination]..."
+	logdy info "Backing up" source="$source" destination="$destination"
 	rsync -avzh "$source" "$destination"
 }
 
-echo "pairing device..."
+logdy info "Pairing device"
 idevicepair pair
-echo "unmounting [$phone_folder]..."
+logdy info "Unmounting" phone_folder="$phone_folder"
 sudo umount -f "$phone_folder" || true
-echo "mounting [$phone_folder]..."
+logdy info "Mounting" phone_folder="$phone_folder"
 ifuse "$phone_folder"
 # Camera Roll
 backup "$phone_folder/DCIM" "$backup_folder/"

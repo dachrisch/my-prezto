@@ -3,13 +3,21 @@
 # Script to sync photos from storagebox to $HOME/photo/
 # Uses rsync with safe options and error handling
 
+source "$HOME/.zprezto/custom/functions/logdy"
+
 SOURCE="/mnt/storagebox/photo/"
 DEST="$HOME/photo/"
 LOGFILE="$HOME/sync_photos.log"
 
+export LOGDY_ALSO_TO_FILE="$LOGFILE"
+
 # Function: graceful exit with message and code
 exit_with_message() {
-    echo "$(date +'%F %T') - $1" | tee -a "$LOGFILE"
+    local level="error"
+    if [[ "$2" -eq 0 ]]; then
+        level="info"
+    fi
+    logdy "$level" "$1"
     exit "$2"
 }
 
@@ -20,12 +28,12 @@ fi
 
 # Check if destination directory exists, if not create it
 if [[ ! -d "$DEST" ]]; then
-    echo "$(date +'%F %T') - Destination directory $DEST not found. Creating it." | tee -a "$LOGFILE"
+    logdy info "Destination directory not found - creating it" dest="$DEST"
     mkdir -p "$DEST" || exit_with_message "ERROR: Failed to create destination directory $DEST." 2
 fi
 
 # Run rsync
-echo "$(date +'%F %T') - Starting rsync from $SOURCE to $DEST" | tee -a "$LOGFILE"
+logdy info "Starting rsync" source="$SOURCE" dest="$DEST"
 rsync -rav --safe-links --prune-empty-dirs --delete-after "$SOURCE" "$DEST" >> "$LOGFILE" 2>&1
 
 # Check rsync exit code

@@ -4,6 +4,8 @@ set -e
 
 shopt -s expand_aliases
 
+source "$HOME/.zprezto/custom/functions/logdy"
+
 usage() {
 	echo "$0 <source> <dest> ['<extension list>']"
 }
@@ -31,13 +33,9 @@ backup_dir="$dest_dir/.tmp/dropbox_backup_$(date +%Y%m%d%H%M%S)"
 logfile=$dest_dir/log/synchronize_photos.log
 lockfile=/var/tmp/synchronize_photos.lock
 
-log_preface() {
-	echo "[$(date -Iseconds)]: "
-}
-
 if [ ! -d "$(dirname $logfile)" ];then mkdir -p "$(dirname $logfile)";fi
 
-exec > >(tee -a -i "$logfile") 2>&1
+export LOGDY_ALSO_TO_FILE="$logfile"
 
 
 date -Iseconds > $lockfile
@@ -63,7 +61,7 @@ count_files() {
 }
 
 
-echo $(log_preface) "[1/3] selecting old files to backup [$source_dir]"
+logdy info "[1/3] Selecting old files to backup" source_dir="$source_dir"
 
 mkdir -p "$backup_dir"
 
@@ -76,16 +74,16 @@ files_to_backup_count=$(ls "$backup_dir" | wc -l)
 
 # check if files have been selected
 if [ $files_to_backup_count -eq 0 ];then
-	echo $(log_preface) "nothing selected...done."
+	logdy info "Nothing selected - done" source_dir="$source_dir"
 	teardown
 	exit 0
 else
-	echo $(log_preface) "================= [$files_to_backup_count] files being selected for backup ($backup_dir) ================="
-	echo $(log_preface) $(ls "$backup_dir")
-	echo $(log_preface) "================================================================"
+	logdy info "Files being selected for backup" count=$files_to_backup_count backup_dir="$backup_dir"
+	echo $(ls "$backup_dir")
+	logdy info "================================================================"
 fi
 
-echo $(log_preface) "[2/3] move files in source to matching directory in dest (year/month)"
+logdy info "[2/3] Moving files in source to matching directory in dest (year/month)"
 exiftool '-filename<filemodifydate' '-filename<DateTimeOriginal' -d $dest_dir'/%Y/%m/%Y-%m-%d %H.%M.%S%%-c.%%e' -i '@eaDir' -r -progress "$backup_dir" || true
 
 
@@ -97,21 +95,21 @@ for extension in $backup_files;do
 done
 
 if [ $remaining_files -eq 0 ] && [ $copied_files -eq $files_to_backup_count ];then
-	echo $(log_preface) "all done. cleaning up..."
+	logdy info "All done - cleaning up"
 	if [ ! -d "$archive_dir" ];then mkdir -p "$archive_dir";fi
 	for extension in $backup_files;do
 		archive $extension
 	done
 	teardown
-	echo $(log_preface) "done."
+	logdy info "Done"
 else
-	echo $(log_preface) "some files failed to backup...check backup dir ($backup_dir)"
-	echo $(log_preface) $(ls "$backup_dir")
-	echo $(log_preface) "exit!"
+	logdy error "Some files failed to backup - check backup dir" backup_dir="$backup_dir"
+	echo $(ls "$backup_dir")
+	logdy error "Exit!"
 	exit 2
 fi
 
-echo $(log_preface) "================= ($source_dir) listing after ================="
-echo $(log_preface) $(ls "$source_dir")
-echo $(log_preface) "================================================================"
+logdy info "================= Listing after =================" source_dir="$source_dir"
+echo $(ls "$source_dir")
+logdy info "================================================================"
 

@@ -1,4 +1,4 @@
 *.zwc
 *.zwc.old
 modules/*/cache.zsh
-/.idea/
+.idea/

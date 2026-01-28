@@ -1,3 +1,4 @@
+alias ls='ls --color=auto'
 alias ll='ls -al'
 # shellcheck disable=SC2142
 alias latest_installed_kernel_version='dpkg --list |grep -E "linux-modules-[0-9]+.*"|grep ii| awk "{print \$2}" | sort -V | tail -1 | cut -f3-5 -d"-"'
@@ -20,3 +21,4 @@ alias stanny_down='turn_bt_device $BT_STANNY off'
 
 alias tar='tar --use-compress-program=pigz'
 alias aicommits='node /home/cda/.zprezto/custom/bin/aicommits.js'
+alias gquota='node /home/cda/.zprezto/custom/gemini-usage-tool/index.js'

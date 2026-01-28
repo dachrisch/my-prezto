@@ -1,0 +1,10 @@
+{
+  "name": "gemini-usage-tool",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Standalone Gemini CLI usage fetcher",
+  "dependencies": {
+    "@google/gemini-cli-core": "latest",
+    "yargs": "^17.7.2"
+  }
+}

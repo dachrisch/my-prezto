@@ -2,7 +2,7 @@ alias ls='ls --color=auto'
 alias ll='ls -al'
 # shellcheck disable=SC2142
 alias latest_installed_kernel_version='dpkg --list |grep -E "linux-modules-[0-9]+.*"|grep ii| awk "{print \$2}" | sort -V | tail -1 | cut -f3-5 -d"-"'
-alias snap-refresh='sudo snap refresh snap-store && sudo snap refresh'
+alias snap-refresh='sudo snap refresh snap-store && sudo snap refresh && snap list --all | grep classic | awk "{print \$1}" | xargs -r -n1 sudo snap refresh'
 # linux-modules-extra needed for storagebox utf-8 support
 alias apt-upgrade='sudo apt update && sudo apt upgrade && sudo apt autoremove'
 alias au=apt-upgrade

@@ -81,10 +81,13 @@ async function main() {
       console.error('\nAuthenticating...');
     }
 
+    // Suppress library noise during auth/init calls
+    const _log = console.log, _info = console.info, _debug = console.debug, _warn = console.warn;
+    console.log = console.info = console.debug = console.warn = () => {};
     await config.refreshAuth(authType);
-    
     const codeAssistServer = getCodeAssistServer(config);
     const quota = await config.refreshUserQuota();
+    console.log = _log; console.info = _info; console.debug = _debug; console.warn = _warn;
 
     const result = {
       account: {

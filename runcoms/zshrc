@@ -80,3 +80,4 @@ fpath=("${ZDOTDIR:-$HOME}/.zprezto/custom/functions" $fpath)
 
 # Autoload the remote_log function
 autoload -Uz logdy
+

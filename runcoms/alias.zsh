@@ -22,3 +22,5 @@ alias stanny_down='turn_bt_device $BT_STANNY off'
 alias tar='tar --use-compress-program=pigz'
 alias aicommits='node /home/cda/.zprezto/custom/bin/aicommits.js'
 alias gquota='node /home/cda/.zprezto/custom/gemini-usage-tool/index.js'
+
+alias claude='claude --dangerously-skip-permissions' 

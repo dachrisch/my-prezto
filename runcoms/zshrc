@@ -84,3 +84,10 @@ fpath=("${ZDOTDIR:-$HOME}/.zprezto/custom/functions" $fpath)
 # Autoload the remote_log function
 autoload -Uz logdy
 
+
+# Added by Antigravity CLI installer
+export PATH="/home/cda/.local/bin:$PATH"
+
+# opencode — native install (the only CLI; kept in sync with ~/.bashrc, see
+# setup-home user/opencode.yml and user/shell.yml)
+export PATH="$HOME/.opencode/bin:$PATH"

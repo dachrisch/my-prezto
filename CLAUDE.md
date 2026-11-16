@@ -108,7 +108,8 @@ cat file.log | logdy warn -  # Read from stdin
 - File + remote: Long-running processes (`LOGDY_ALSO_TO_FILE=/var/log/script.log`)
 
 **Scripts Currently Using logdy:**
-- `backup_home.sh` - Home directory backups
+- `backup_home.sh` - Home directory backups (NOT tracked here: rendered into
+  `custom/bin/` by the setup-home ansible `user.restic` role, gitignored)
 - `backup_signal.sh` - Signal app backups
 - `backup_timeshift.sh` - Timeshift backups (with custom wrappers)
 

@@ -20,5 +20,7 @@ echo $SAYINGS[$(($RANDOM % $#SAYINGS + 1))]
 
 # sync commands
 if (( $+commands[atuin] )); then
-  atuin sync > /dev/null
+  # Same as zlogin: atuin reports progress on STDERR, so redirect both streams or
+  # "Sync complete! ..." lands on the console as the session closes.
+  atuin sync > /dev/null 2>&1
 fi

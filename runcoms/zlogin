@@ -30,5 +30,9 @@ fi >&2
 
 # sync commands
 if (( $+commands[atuin] )); then
-  atuin sync > /dev/null
+  # atuin reports progress on STDERR, so >/dev/null alone left "Sync complete! ..."
+  # on the console. powerlevel10k's instant prompt captures that as initialization
+  # output and answers every login with a "Console output during zsh initialization
+  # detected" warning. Silence both streams.
+  atuin sync > /dev/null 2>&1
 fi

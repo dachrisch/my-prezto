@@ -223,11 +223,14 @@ USG
   fi
 
   # Authenticated cross-host route (basicAuth + ipAllowList on codey) plus the
-  # tenant header. Basic auth is only sent when both halves are configured, so
-  # an unauthenticated local Loki still works.
+  # tenant header. The basic-auth credential goes to curl via `curl -K -` on
+  # STDIN, never in argv: /proc/<pid>/cmdline is world-readable and a `-u
+  # user:password` argument leaks the password to every user on the host.
+  # The log line is passed with --data (an argument), leaving stdin free.
   local headers=( -H "Content-Type: application/json" -H "X-Scope-OrgID: ${LOKI_TENANT_ID}" )
+  local curl_config=""
   if [[ -n "${LOKI_USER:-}" && -n "${LOKI_PASSWORD:-}" ]]; then
-    headers+=( -u "${LOKI_USER}:${LOKI_PASSWORD}" )
+    curl_config="user = \"${LOKI_USER}:${LOKI_PASSWORD}\""
   fi
 
   # Send to Loki (temporarily disable set -e to handle curl errors gracefully)
@@ -236,7 +239,8 @@ USG
   http_code="$(curl "${curl_opts[@]}" -o /dev/null -w "%{http_code}" \
     -X POST "${LOKI_URL}" \
     "${headers[@]}" \
-    --data "${body}" 2>/dev/null)"
+    --data "${body}" \
+    -K - <<<"${curl_config}" 2>/dev/null)"
   curl_code=$?
   set -e  # Re-enable errexit
 

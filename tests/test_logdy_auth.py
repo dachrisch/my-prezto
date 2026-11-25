@@ -18,6 +18,7 @@ LOGDY = ROOT / "custom/functions/logdy"
 
 FAKE_CURL = """#!/bin/sh
 printf '%s\\n' "$@" > "$CURL_ARGS_CAPTURE"
+cat > "$CURL_STDIN_CAPTURE"
 printf '204'
 """
 
@@ -40,11 +41,13 @@ class LogdyLokiAuth(unittest.TestCase):
         (root / ".config/logdy").mkdir(parents=True)
         (root / ".config/logdy/loki.env").write_text(ENV_FILE)
         self.args = root / "curl-args.txt"
+        self.stdin = root / "curl-stdin.txt"
         self.env = dict(os.environ)
         self.env.update(
             HOME=str(root),
             PATH=f"{root / 'bin'}:{self.env['PATH']}",
             CURL_ARGS_CAPTURE=str(self.args),
+            CURL_STDIN_CAPTURE=str(self.stdin),
             LOGDY_SILENT="1",
             # Simulates the old zshenv export: it must be overridden.
             LOKI_URL="https://monitor.lehel.xyz/loki/api/v1/push",
@@ -55,6 +58,7 @@ class LogdyLokiAuth(unittest.TestCase):
         proc = subprocess.run(
             ["zsh", "-c", f"source {LOGDY}; logdy info 'auth test' key=value"],
             env=self.env, capture_output=True, text=True, timeout=30,
+            stdin=subprocess.DEVNULL,
         )
         return proc, self.args.read_text().splitlines() if self.args.exists() else []
 
@@ -62,9 +66,21 @@ class LogdyLokiAuth(unittest.TestCase):
         proc, args = self.run_logdy()
         self.assertEqual(proc.returncode, 0, proc.stderr)
         self.assertIn("http://loki.test/loki/api/v1/push", args, args)
-        self.assertIn("pushuser:pushsecret", args, args)
+        self.assertIn('user = "pushuser:pushsecret"', self.stdin.read_text(),
+                      "basic auth must come from curl config on stdin")
         self.assertIn("X-Scope-OrgID: tenant-abc", args, args)
         self.assertFalse(any("monitor.lehel.xyz" in a for a in args), args)
+
+    def test_password_is_never_on_curl_argv(self):
+        # Every local user can read /proc/<pid>/cmdline while curl runs. The
+        # credential must go through stdin via `curl -K -`, never through an
+        # argument (`-u`, `--user`, or a header baked into the body).
+        _, args = self.run_logdy()
+        self.assertNotIn("pushsecret", " ".join(args), "password leaked into curl argv")
+        self.assertIn("-K", args, "curl must read its config from stdin")
+        self.assertIn("-", args)
+        config = self.stdin.read_text() if self.stdin.exists() else ""
+        self.assertIn('user = "pushuser:pushsecret"', config, "config must carry the credential")
 
     def test_no_hardcoded_endpoint_in_the_function(self):
         self.assertNotIn("monitor.lehel.xyz", LOGDY.read_text())

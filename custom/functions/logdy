@@ -1,8 +1,14 @@
 # Shell function to send logs to Loki
-# Minimal required env vars:
-#   LOKI_URL (e.g. "https://monitor.lehel.xyz/loki/api/v1/push")
-#   LOKI_API_KEY (X-Scope-OrgID header - acts as API key in multi-tenant mode)
+# The endpoint and credentials come from ~/.config/logdy/loki.env (mode 0600),
+# rendered by Ansible from the private servyy-container secrets vault. That file
+# is authoritative: it overrides any LOKI_URL set by the login shell. Nothing
+# in this public repo holds a URL, user, password or tenant by default.
+# Required env vars (normally from that file):
+#   LOKI_URL         full push endpoint
+#   LOKI_TENANT_ID   X-Scope-OrgID header (LOKI_API_KEY still accepted as alias)
 # Optional:
+#   LOKI_USER / LOKI_PASSWORD   HTTP basic auth (used when both are set)
+
 #   LOKI_INSECURE=1          # if you need curl -k for self-signed certs
 #   LOKI_DRY_RUN=1           # prints payload instead of sending (debug)
 #   LOGDY_SILENT=1           # suppress console output
@@ -74,14 +80,22 @@ LOKI__format_console() {
 
 logdy() {
   local level timestamp_ns host script user message json_line curl_opts body
+  local logdy_env="${LOGDY_LOKI_ENV:-${HOME:-}/.config/logdy/loki.env}"
+
+  # The private env file is sourced here, not in a public runcom: it supplies
+  # the authenticated route and overrides the stale LOKI_URL exported by zshenv.
+  if [[ -f "$logdy_env" ]]; then
+    source "$logdy_env"
+  fi
+  LOKI_TENANT_ID="${LOKI_TENANT_ID:-${LOKI_API_KEY:-}}"
 
   # quick validation
-  if [[ -z "${LOKI_URL}" ]]; then
-    printf '%s\n' "logdy: ERROR: please set LOKI_URL (e.g. https://monitor.lehel.xyz/loki/api/v1/push)" >&2
+  if [[ -z "${LOKI_URL:-}" ]]; then
+    printf '%s\n' "logdy: ERROR: please set LOKI_URL in ~/.config/logdy/loki.env" >&2
     return 2
   fi
-  if [[ -z "${LOKI_API_KEY}" ]]; then
-    printf '%s\n' "logdy: ERROR: please set LOKI_API_KEY (used as X-Scope-OrgID)" >&2
+  if [[ -z "${LOKI_TENANT_ID}" ]]; then
+    printf '%s\n' "logdy: ERROR: please set LOKI_TENANT_ID in ~/.config/logdy/loki.env" >&2
     return 2
   fi
 
@@ -208,8 +222,16 @@ USG
     curl_opts+=( -k )
   fi
 
-  # Headers with API key (X-Scope-OrgID acts as API key in multi-tenant Loki)
-  local headers=( -H "Content-Type: application/json" -H "X-Scope-OrgID: ${LOKI_API_KEY}" )
+  # Authenticated cross-host route (basicAuth + ipAllowList on codey) plus the
+  # tenant header. The basic-auth credential goes to curl via `curl -K -` on
+  # STDIN, never in argv: /proc/<pid>/cmdline is world-readable and a `-u
+  # user:password` argument leaks the password to every user on the host.
+  # The log line is passed with --data (an argument), leaving stdin free.
+  local headers=( -H "Content-Type: application/json" -H "X-Scope-OrgID: ${LOKI_TENANT_ID}" )
+  local curl_config=""
+  if [[ -n "${LOKI_USER:-}" && -n "${LOKI_PASSWORD:-}" ]]; then
+    curl_config="user = \"${LOKI_USER}:${LOKI_PASSWORD}\""
+  fi
 
   # Send to Loki (temporarily disable set -e to handle curl errors gracefully)
   local http_code curl_code
@@ -217,7 +239,8 @@ USG
   http_code="$(curl "${curl_opts[@]}" -o /dev/null -w "%{http_code}" \
     -X POST "${LOKI_URL}" \
     "${headers[@]}" \
-    --data "${body}" 2>/dev/null)"
+    --data "${body}" \
+    -K - <<<"${curl_config}" 2>/dev/null)"
   curl_code=$?
   set -e  # Re-enable errexit
 
